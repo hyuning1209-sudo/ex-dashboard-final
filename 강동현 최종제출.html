@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국도로공사 사업·업무 통합 관리 대시보드</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Pretendard",sans-serif;background:#EAECF0;color:#1A202C;font-size:14px;}
+:root{
+  --blue:#0052CC;--blue-dark:#003D99;--blue-bg:#EBF2FF;
+  --green:#16A34A;--green-bg:#DCFCE7;
+  --red:#DC2626;--red-bg:#FEE2E2;
+  --orange:#D97706;--orange-bg:#FEF3C7;
+  --purple:#7C3AED;--purple-bg:#F3E8FF;
+  --teal:#0891B2;--teal-bg:#CFFAFE;
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+  --gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;
+  --sh:0 1px 3px rgba(0,0,0,.08);--sh-md:0 4px 12px rgba(0,0,0,.12);
+  --r:8px;--rs:6px;
+}
+
+/* ── LAYOUT ─────────────────────────────── */
+body{display:flex;flex-direction:column;}
+.header{height:54px;background:#fff;border-bottom:2.5px solid var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,82,204,.12);}
+.header-logo{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:var(--blue);white-space:nowrap;}
+.header-logo .sub{color:var(--gray-500);font-weight:500;font-size:12px;margin-left:2px;}
+.header-nav{display:flex;gap:2px;}
+.nav-btn{padding:5px 13px;border:none;background:transparent;color:var(--gray-600);border-radius:var(--rs);cursor:pointer;font-size:13px;font-weight:600;transition:all 120ms;}
+.nav-btn:hover{background:var(--blue-bg);color:var(--blue);}
+.nav-btn.active{background:var(--blue);color:#fff;}
+.header-right{display:flex;gap:8px;align-items:center;}
+.hdate{font-size:12px;color:var(--gray-400);margin-right:4px;}
+
+/* ── MAIN ───────────────────────────────── */
+.main{flex:1;overflow-y:auto;padding:12px 20px;display:flex;flex-direction:column;gap:10px;}
+
+/* ── BUTTONS ────────────────────────────── */
+.btn{padding:6px 12px;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:700;border:none;transition:all 120ms;display:inline-flex;align-items:center;gap:4px;line-height:1.4;}
+.btn-p{background:var(--blue);color:#fff;}.btn-p:hover{background:var(--blue-dark);}
+.btn-s{background:#fff;color:var(--gray-700);border:1px solid var(--gray-300);}.btn-s:hover{background:var(--gray-50);}
+.btn-d{background:var(--red);color:#fff;}.btn-d:hover{background:#B91C1C;}
+.ico-btn{padding:4px 7px;background:#fff;border:1px solid var(--gray-300);color:var(--gray-500);border-radius:var(--rs);cursor:pointer;font-size:12px;transition:all 120ms;line-height:1;}
+.ico-btn:hover{background:var(--gray-50);}
+
+/* ── CARD ───────────────────────────────── */
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.ch{padding:10px 14px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ct{font-size:13px;font-weight:700;color:var(--gray-800);display:flex;align-items:center;gap:5px;}
+.cb{padding:12px 14px;}
+
+/* ── KPI ROW ────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;flex-shrink:0;}
+.kpi{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--blue);position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;right:-10px;top:-10px;width:60px;height:60px;border-radius:50%;opacity:.06;}
+.kpi.k-green{border-left-color:var(--green);}
+.kpi.k-red{border-left-color:var(--red);}
+.kpi.k-orange{border-left-color:var(--orange);}
+.kpi.k-teal{border-left-color:var(--teal);}
+.kpi.k-purple{border-left-color:var(--purple);}
+.kpi-icon{font-size:22px;line-height:1;flex-shrink:0;}
+.kpi-body{flex:1;min-width:0;}
+.kpi-val{font-size:22px;font-weight:800;color:var(--gray-800);line-height:1.1;}
+.kpi-val.c-blue{color:var(--blue);}
+.kpi-val.c-green{color:var(--green);}
+.kpi-val.c-red{color:var(--red);}
+.kpi-val.c-orange{color:var(--orange);}
+.kpi-val.c-teal{color:var(--teal);}
+.kpi-val.c-purple{color:var(--purple);}
+.kpi-lbl{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.4px;margin-top:1px;}
+.kpi-sub{font-size:10px;color:var(--gray-400);margin-top:2px;}
+.kpi-bar{height:3px;background:var(--gray-200);border-radius:2px;margin-top:5px;overflow:hidden;}
+.kpi-bar-fill{height:100%;border-radius:2px;background:var(--blue);}
+
+/* ── SCHEDULE SECTION (today + week) ────── */
+.sched-section{display:grid;grid-template-columns:280px 1fr;gap:10px;flex-shrink:0;}
+
+/* Today timeline */
+.today-card{display:flex;flex-direction:column;}
+.today-card .cb{flex:1;padding:8px 12px;overflow-y:auto;max-height:240px;}
+.toggle-row{display:flex;background:var(--gray-100);border-radius:14px;padding:2px;gap:0;}
+.tgl{padding:3px 10px;border-radius:12px;border:none;background:transparent;font-size:11px;font-weight:700;cursor:pointer;color:var(--gray-400);transition:all 120ms;}
+.tgl.on{background:#fff;color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+.timeline{display:flex;flex-direction:column;gap:6px;}
+.tl-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:var(--rs);background:var(--gray-50);border-left:3px solid var(--blue);transition:opacity 120ms;}
+.tl-item.past{opacity:.5;border-left-color:var(--gray-300);}
+.tl-item.now{background:var(--blue-bg);border-left-color:var(--blue);font-weight:700;}
+.tl-item.dept{border-left-color:var(--purple);}
+.tl-time{font-size:11px;font-weight:700;color:var(--blue);min-width:38px;}
+.tl-item.dept .tl-time{color:var(--purple);}
+.tl-text{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tl-tag{font-size:10px;padding:1px 5px;border-radius:8px;background:var(--blue-bg);color:var(--blue);font-weight:700;flex-shrink:0;}
+.tl-tag.dept{background:var(--purple-bg);color:var(--purple);}
+.tl-del{background:none;border:none;cursor:pointer;color:var(--gray-300);font-size:13px;padding:1px 3px;flex-shrink:0;}
+.tl-del:hover{color:var(--red);}
+.no-sched{text-align:center;color:var(--gray-400);font-size:12px;padding:16px 0;}
+
+/* Week calendar */
+.week-card{display:flex;flex-direction:column;}
+.week-card .cb{flex:1;padding:8px 10px;}
+.wcal{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;height:210px;}
+.wday{border:1px solid var(--gray-200);border-radius:var(--rs);display:flex;flex-direction:column;overflow:hidden;}
+.wday-hd{padding:4px 6px;text-align:center;background:var(--gray-100);border-bottom:1px solid var(--gray-200);flex-shrink:0;}
+.wday-hd .dn{font-size:10px;font-weight:700;color:var(--gray-500);}
+.wday-hd .dd{font-size:15px;font-weight:800;color:var(--gray-700);line-height:1.2;}
+.wday.today .wday-hd{background:var(--blue);border-bottom-color:var(--blue-dark);}
+.wday.today .wday-hd .dn{color:rgba(255,255,255,.8);}
+.wday.today .wday-hd .dd{color:#fff;}
+.wday-body{flex:1;padding:4px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;}
+.wev{font-size:10px;padding:2px 5px;border-radius:3px;background:var(--blue-bg);color:var(--blue);cursor:pointer;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.wev:hover{background:var(--blue);color:#fff;}
+.wev.dept{background:var(--purple-bg);color:var(--purple);}
+.wev.dept:hover{background:var(--purple);color:#fff;}
+.wmore{font-size:9px;color:var(--gray-400);padding:1px 4px;}
+
+/* ── MIDDLE ROW (risk + deadlines) ──────── */
+.mid-row{display:grid;grid-template-columns:1fr 260px;gap:10px;flex-shrink:0;}
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;padding:10px 12px;}
+.rc{border-radius:var(--rs);border:1px solid var(--gray-200);padding:10px 12px;cursor:pointer;transition:box-shadow 120ms;position:relative;overflow:hidden;}
+.rc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.rc.r-red::before{background:var(--red);}
+.rc.r-orange::before{background:var(--orange);}
+.rc:hover{box-shadow:var(--sh-md);}
+.rc-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-bottom:5px;}
+.rc.r-red .rc-tag{background:var(--red-bg);color:var(--red);}
+.rc.r-orange .rc-tag{background:var(--orange-bg);color:var(--orange);}
+.rc-name{font-size:12px;font-weight:700;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.rc-meta{font-size:10px;color:var(--gray-500);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rc-pb{height:4px;background:var(--gray-200);border-radius:2px;overflow:hidden;}
+.rc-pf{height:100%;border-radius:2px;}
+.rc-pct{font-size:10px;font-weight:700;margin-top:3px;}
+.no-risk{padding:24px;text-align:center;color:var(--gray-400);font-size:12px;}
+
+/* Deadlines sidebar */
+.dl-list{display:flex;flex-direction:column;gap:0;}
+.dl-item{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--gray-100);cursor:pointer;transition:background 100ms;}
+.dl-item:last-child{border-bottom:none;}
+.dl-item:hover{background:var(--gray-50);}
+.dl-badge{min-width:38px;text-align:center;font-size:11px;font-weight:700;padding:2px 4px;border-radius:4px;}
+.dl-badge.r{background:var(--red-bg);color:var(--red);}
+.dl-badge.o{background:var(--orange-bg);color:var(--orange);}
+.dl-badge.g{background:var(--green-bg);color:var(--green);}
+.dl-info{flex:1;min-width:0;}
+.dl-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gray-800);}
+.dl-pb{height:3px;background:var(--gray-200);border-radius:2px;margin-top:3px;overflow:hidden;}
+.dl-pf{height:100%;border-radius:2px;}
+
+/* ── PROJECT TABLE ──────────────────────── */
+.tb-toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.si{padding:6px 10px;border:1px solid var(--gray-300);border-radius:var(--rs);font-size:12px;background:#fff;color:#1A202C;}
+.si:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,82,204,.10);}
+.pt{width:100%;border-collapse:collapse;}
+.pt th{padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;border-bottom:2px solid var(--gray-200);background:var(--gray-50);white-space:nowrap;cursor:pointer;user-select:none;letter-spacing:.3px;}
+.pt th:hover{color:var(--blue);}
+.pt td{padding:8px 10px;border-bottom:1px solid var(--gray-100);font-size:12px;vertical-align:middle;}
+.pt tbody tr:hover td{background:#F5F8FF;}
+.pt tbody tr{cursor:pointer;transition:background 80ms;}
+.pt tbody tr.risk-row td{background:#FFFAF5;}
+.pn{font-weight:600;color:var(--gray-800);font-size:12px;}
+.pc{font-size:10px;color:var(--gray-400);margin-top:1px;}
+.bdg{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:700;}
+.bdg-g{background:var(--green-bg);color:var(--green);}
+.bdg-b{background:var(--blue-bg);color:var(--blue);}
+.bdg-r{background:var(--red-bg);color:var(--red);}
+.bdg-o{background:var(--orange-bg);color:var(--orange);}
+.bdg-x{background:var(--gray-100);color:var(--gray-500);}
+.pb-cell{display:flex;align-items:center;gap:5px;}
+.pb-wrap{width:70px;height:5px;background:var(--gray-200);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.pb-fill{height:100%;border-radius:3px;}
+.pb-pct{font-size:11px;font-weight:700;min-width:30px;}
+.amt{font-size:11px;font-weight:600;color:var(--gray-700);text-align:right;white-space:nowrap;}
+.mgr{font-size:11px;color:var(--gray-600);}
+.em-row td{text-align:center;padding:32px;color:var(--gray-400);font-size:12px;}
+.flag-cb{width:13px;height:13px;cursor:pointer;accent-color:var(--red);}
+.cnt{display:inline-block;background:var(--blue);color:#fff;border-radius:8px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:3px;}
+
+/* ── SECTION HEADER ─────────────────────── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:0;}
+
+/* ── MODALS ─────────────────────────────── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+.ov.open{display:flex;}
+.mdl{background:#fff;border-radius:12px;width:100%;max-width:660px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 40px rgba(0,0,0,.2);display:flex;flex-direction:column;}
+.mdl.wide{max-width:860px;}
+.mh{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.mh h2{font-size:16px;font-weight:800;}
+.mc-btn{background:none;border:none;font-size:18px;cursor:pointer;color:var(--gray-400);padding:3px;line-height:1;}
+.mc-btn:hover{color:var(--gray-700);}
+.mb{padding:18px 20px;flex:1;}
+.mf{padding:12px 20px;border-top:1px solid var(--gray-200);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+
+/* Forms */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fitem{display:flex;flex-direction:column;gap:4px;}
+.fitem.full{grid-column:1/-1;}
+.flbl{font-size:11px;font-weight:700;color:var(--gray-600);}
+.fi{padding:7px 9px;border:1px solid var(--gray-300);border-radius:var(--rs);font-size:13px;background:#fff;color:#1A202C;transition:border-color 120ms;width:100%;}
+.fi:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(0,82,204,.10);}
+.fhint{font-size:10px;color:var(--gray-400);}
+
+/* Detail tabs */
+.dtabs{display:flex;border-bottom:2px solid var(--gray-200);margin-bottom:14px;}
+.dtab{padding:7px 14px;border:none;background:transparent;font-size:12px;font-weight:700;cursor:pointer;color:var(--gray-400);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 120ms;}
+.dtab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.tp{display:none;}.tp.on{display:block;}
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.ii{background:var(--gray-50);border-radius:var(--rs);padding:9px 11px;}
+.il{font-size:10px;color:var(--gray-500);font-weight:600;margin-bottom:2px;}
+.iv{font-size:13px;font-weight:700;color:var(--gray-800);}
+
+/* Stage management */
+.sl{display:flex;flex-direction:column;gap:6px;}
+.sr{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid var(--gray-200);border-radius:var(--rs);background:#fff;}
+.sr.done{background:var(--green-bg);border-color:#BBF7D0;}
+.sck{width:15px;height:15px;cursor:pointer;accent-color:var(--green);}
+.sni{flex:1;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--gray-800);outline:none;}
+.sdi{width:115px;border:1px solid var(--gray-200);border-radius:4px;font-size:11px;padding:3px 5px;color:var(--gray-600);}
+.sdi:focus{outline:none;border-color:var(--blue);}
+.sdel{background:none;border:none;cursor:pointer;color:var(--gray-300);font-size:14px;padding:1px;}
+.sdel:hover{color:var(--red);}
+.stpls{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.stp{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--gray-100);color:var(--gray-600);cursor:pointer;border:1px solid var(--gray-200);transition:all 100ms;}
+.stp:hover{background:var(--blue-bg);color:var(--blue);border-color:var(--blue);}
+
+/* Gantt (detail) */
+.gw{overflow-x:auto;margin-top:6px;}
+.gt{border-collapse:collapse;min-width:500px;width:100%;}
+.gt th{padding:5px 7px;font-size:10px;font-weight:700;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200);white-space:nowrap;}
+.gt td{padding:5px 7px;border-bottom:1px solid var(--gray-100);font-size:11px;vertical-align:middle;}
+.gmt{text-align:center;min-width:50px;border-left:1px solid var(--gray-200);}
+.gbc{position:relative;height:20px;border-left:1px solid var(--gray-100);}
+.gbi{position:absolute;top:2px;height:14px;border-radius:3px;background:var(--blue);min-width:4px;}
+.gbi.done{background:var(--green);}
+.gbi.ms{background:var(--orange);width:4px!important;border-radius:50% 50% 50% 0;}
+
+/* Schedule table */
+.stbl{width:100%;border-collapse:collapse;}
+.stbl th{font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;padding:6px 10px;border-bottom:2px solid var(--gray-200);background:var(--gray-50);}
+.stbl td{padding:7px 10px;font-size:12px;border-bottom:1px solid var(--gray-100);}
+
+/* Toast */
+.toast{position:fixed;bottom:18px;right:18px;padding:10px 16px;background:var(--green);color:#fff;border-radius:var(--rs);box-shadow:var(--sh-md);font-weight:700;font-size:12px;z-index:9999;animation:su 200ms ease-out;}
+.toast.err{background:var(--red);}
+@keyframes su{from{transform:translateY(50px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gray-400);}
+
+/* Views */
+#vd,#vp,#vs{display:none;}
+#vd.on,#vp.on,#vs.on{display:flex;flex-direction:column;gap:10px;}
+
+@media(max-width:1300px){.kpi-row{grid-template-columns:repeat(3,1fr);}.sched-section{grid-template-columns:1fr;}.mid-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">🛣️ 한국도로공사 <span class="sub">사업·업무 통합 관리 대시보드</span></div>
+  <nav class="header-nav">
+    <button class="nav-btn" onclick="sw('d')">대시보드</button>
+    <button class="nav-btn" onclick="sw('p')">사업 목록</button>
+    <button class="nav-btn" onclick="sw('s')">일정 관리</button>
+  </nav>
+  <div class="header-right">
+    <span class="hdate" id="hdate"></span>
+    <button class="btn btn-s" onclick="openSM()">+ 일정 등록</button>
+    <button class="btn btn-p" onclick="openPM()">+ 사업 등록</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <div id="vd" class="on">
+
+    <!-- KPI ROW -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- SCHEDULE SECTION -->
+    <div class="sched-section">
+      <!-- Today -->
+      <div class="card today-card">
+        <div class="ch">
+          <span class="ct">📅 오늘 일정 <span id="todayLbl" style="font-size:11px;color:var(--gray-400);font-weight:400;"></span></span>
+          <div class="toggle-row">
+            <button class="tgl on" id="tgMy" onclick="setTV('my')">내 일정</button>
+            <button class="tgl" id="tgDept" onclick="setTV('dept')">부서 전체</button>
+          </div>
+        </div>
+        <div class="cb"><div class="timeline" id="todayTL"></div></div>
+      </div>
+
+      <!-- Week Calendar -->
+      <div class="card week-card">
+        <div class="ch">
+          <span class="ct">📆 이번주 일정</span>
+          <span id="wrange" style="font-size:11px;color:var(--gray-400);"></span>
+        </div>
+        <div class="cb"><div class="wcal" id="wcal"></div></div>
+      </div>
+    </div>
+
+    <!-- MIDDLE ROW: Risk + Deadlines -->
+    <div class="mid-row">
+      <!-- Risk Cards -->
+      <div class="card" style="overflow:hidden;">
+        <div class="ch">
+          <span class="ct">⚠️ 위험 사업 <span class="cnt" id="riskCnt">0</span></span>
+          <span style="font-size:11px;color:var(--gray-400);">종료임박·공정지연·관리필요</span>
+        </div>
+        <div class="risk-grid" id="riskGrid"></div>
+      </div>
+
+      <!-- Upcoming Deadlines -->
+      <div class="card" style="overflow:hidden;">
+        <div class="ch"><span class="ct">🗓 마감 임박</span></div>
+        <div class="dl-list" id="dlList"></div>
+      </div>
+    </div>
+
+    <!-- PROJECT TABLE -->
+    <div class="card">
+      <div class="ch">
+        <span class="ct">📋 사업 현황 <span class="cnt" id="tblCnt">0</span></span>
+        <div class="tb-toolbar">
+          <input class="si" id="si" placeholder="사업명·수행사·담당자 검색" oninput="rt()" style="width:190px;">
+          <select class="si" id="stF" onchange="rt()">
+            <option value="">전체 상태</option>
+            <option value="진행중">진행중</option>
+            <option value="완료">완료</option>
+            <option value="위험">위험</option>
+            <option value="준비중">준비중</option>
+          </select>
+          <select class="si" id="ctF" onchange="rt()"><option value="">전체 분류</option></select>
+          <select class="si" id="soF" onchange="rt()">
+            <option value="name">사업명순</option>
+            <option value="risk">위험도순</option>
+            <option value="progress">공정률순</option>
+            <option value="amount">계약금액순</option>
+            <option value="endDate">종료일순</option>
+            <option value="manager">담당자순</option>
+          </select>
+          <button class="btn btn-s" onclick="dlExcel()">📥 Excel</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pt">
+          <thead><tr>
+            <th style="width:30px;"></th>
+            <th>사업명</th><th>수행사</th><th>담당자</th>
+            <th>공정률</th><th>계약금액</th><th>종료일</th><th>상태</th>
+            <th style="width:46px;"></th>
+          </tr></thead>
+          <tbody id="ptb"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /vd -->
+
+  <!-- ===== PROJECTS VIEW ===== -->
+  <div id="vp">
+    <div class="card">
+      <div class="ch">
+        <span class="ct">📋 전체 사업 목록 <span class="cnt" id="tblCnt2">0</span></span>
+        <div class="tb-toolbar">
+          <input class="si" id="si2" placeholder="검색" oninput="rt2()" style="width:180px;">
+          <select class="si" id="stF2" onchange="rt2()">
+            <option value="">전체 상태</option>
+            <option value="진행중">진행중</option><option value="완료">완료</option>
+            <option value="위험">위험</option><option value="준비중">준비중</option>
+          </select>
+          <button class="btn btn-s" onclick="dlExcel()">📥 Excel</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="pt">
+          <thead><tr>
+            <th style="width:30px;"></th>
+            <th>사업명</th><th>수행사</th><th>담당자</th>
+            <th>공정률</th><th>계약금액</th><th>착수일</th><th>종료일</th><th>상태</th>
+            <th style="width:46px;"></th>
+          </tr></thead>
+          <tbody id="ptb2"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCHEDULE VIEW ===== -->
+  <div id="vs">
+    <div class="card">
+      <div class="ch">
+        <span class="ct">📅 전체 일정 목록</span>
+        <button class="btn btn-p" onclick="openSM()">+ 일정 등록</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="stbl">
+          <thead><tr><th>날짜</th><th>시간</th><th>제목</th><th>분류</th><th>담당자</th><th>연계 사업</th><th style="width:40px;"></th></tr></thead>
+          <tbody id="stb"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ===== MODAL: PROJECT ===== -->
+<div class="ov" id="pmOv">
+  <div class="mdl">
+    <div class="mh"><h2 id="pmTitle">새 사업 등록</h2><button class="mc-btn" onclick="cOv('pmOv')">✕</button></div>
+    <div class="mb">
+      <div class="fg">
+        <div class="fitem full"><label class="flbl">사업명 *</label><input class="fi" id="pm_name" placeholder="사업명"></div>
+        <div class="fitem"><label class="flbl">분류</label><input class="fi" id="pm_cat" placeholder="공사, 연구용역, 기술용역..." list="catDL"><datalist id="catDL"></datalist></div>
+        <div class="fitem"><label class="flbl">수행사</label><input class="fi" id="pm_con" placeholder="수행사명"></div>
+        <div class="fitem full"><label class="flbl">담당자 <span class="fhint">(쉼표 구분)</span></label><input class="fi" id="pm_mgr" placeholder="홍길동, 김철수"></div>
+        <div class="fitem"><label class="flbl">계약금액 (원)</label><input class="fi" id="pm_amt" type="number" placeholder="0"></div>
+        <div class="fitem"><label class="flbl">계약일</label><input class="fi" id="pm_cd" type="date"></div>
+        <div class="fitem"><label class="flbl">착수일 *</label><input class="fi" id="pm_sd" type="date"></div>
+        <div class="fitem"><label class="flbl">종료일 *</label><input class="fi" id="pm_ed" type="date"></div>
+        <div class="fitem"><label class="flbl">공정률 (%)</label><input class="fi" id="pm_prog" type="number" min="0" max="100" placeholder="0"></div>
+        <div class="fitem"><label class="flbl">상태</label>
+          <select class="fi" id="pm_st"><option value="준비중">준비중</option><option value="진행중" selected>진행중</option><option value="완료">완료</option><option value="위험">위험</option></select>
+        </div>
+        <div class="fitem full"><label class="flbl">비고</label><input class="fi" id="pm_note" placeholder="특이사항"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-s" onclick="cOv('pmOv')">취소</button><button class="btn btn-p" onclick="svProj()">저장</button></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: DETAIL ===== -->
+<div class="ov" id="dmOv">
+  <div class="mdl wide">
+    <div class="mh">
+      <h2 id="dmTitle">사업 상세</h2>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn btn-s" onclick="editCurProj()">수정</button>
+        <button class="btn btn-d" onclick="delCurProj()">삭제</button>
+        <button class="mc-btn" onclick="cOv('dmOv')">✕</button>
+      </div>
+    </div>
+    <div class="mb">
+      <div class="dtabs">
+        <button class="dtab on" onclick="sTab('info')">기본정보</button>
+        <button class="dtab" onclick="sTab('stages')">업무 단계</button>
+        <button class="dtab" onclick="sTab('gantt')">간트차트</button>
+        <button class="dtab" onclick="sTab('scheds')">관련 일정</button>
+      </div>
+      <div class="tp on" id="tp-info">
+        <div class="ig" id="dmIG"></div>
+        <div id="dmNote" style="background:var(--gray-50);border-radius:var(--rs);padding:9px 11px;font-size:12px;color:var(--gray-600);"></div>
+      </div>
+      <div class="tp" id="tp-stages">
+        <div style="margin-bottom:8px;font-size:11px;color:var(--gray-400);">단계를 자유롭게 추가·수정·완료 처리하세요.</div>
+        <div class="sl" id="stageList"></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <input class="fi" id="nStageName" placeholder="단계명" style="flex:1;" onkeydown="if(event.key==='Enter')addStage()">
+          <input class="fi" id="nStageDate" type="date" style="width:120px;">
+          <button class="btn btn-s" onclick="addStage()">+ 추가</button>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--gray-400);">빠른 추가:</div>
+        <div class="stpls">
+          <span class="stp" onclick="qStage('착수보고')">착수보고</span>
+          <span class="stp" onclick="qStage('중간보고')">중간보고</span>
+          <span class="stp" onclick="qStage('최종보고')">최종보고</span>
+          <span class="stp" onclick="qStage('주민설명회')">주민설명회</span>
+          <span class="stp" onclick="qStage('관계기관 협의')">관계기관 협의</span>
+          <span class="stp" onclick="qStage('내부 검토')">내부 검토</span>
+          <span class="stp" onclick="qStage('계약')">계약</span>
+          <span class="stp" onclick="qStage('납품')">납품</span>
+          <span class="stp" onclick="qStage('검수')">검수</span>
+          <span class="stp" onclick="qStage('현장 점검')">현장 점검</span>
+        </div>
+      </div>
+      <div class="tp" id="tp-gantt"><div class="gw" id="ganttWrap"></div></div>
+      <div class="tp" id="tp-scheds">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+          <button class="btn btn-s" onclick="openSMforP()">+ 이 사업 일정 등록</button>
+        </div>
+        <table class="stbl"><thead><tr><th>날짜</th><th>시간</th><th>제목</th><th>담당자</th><th style="width:40px;"></th></tr></thead>
+        <tbody id="dmScheds"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: SCHEDULE ===== -->
+<div class="ov" id="smOv">
+  <div class="mdl" style="max-width:460px;">
+    <div class="mh"><h2>일정 등록</h2><button class="mc-btn" onclick="cOv('smOv')">✕</button></div>
+    <div class="mb">
+      <div class="fg">
+        <div class="fitem full"><label class="flbl">제목 *</label><input class="fi" id="sc_t" placeholder="일정 제목"></div>
+        <div class="fitem"><label class="flbl">날짜 *</label><input class="fi" id="sc_d" type="date"></div>
+        <div class="fitem"><label class="flbl">시간</label><input class="fi" id="sc_tm" type="time"></div>
+        <div class="fitem"><label class="flbl">분류</label>
+          <select class="fi" id="sc_tp"><option value="my">내 일정</option><option value="dept">부서 일정</option></select>
+        </div>
+        <div class="fitem"><label class="flbl">담당자</label><input class="fi" id="sc_m" placeholder="담당자"></div>
+        <div class="fitem full"><label class="flbl">연계 사업</label><select class="fi" id="sc_p"><option value="">없음</option></select></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-s" onclick="cOv('smOv')">취소</button><button class="btn btn-p" onclick="svSched()">저장</button></div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────
+   STATE
+───────────────────────────── */
+const S={projects:[],schedules:[],cats:[],tv:'my',curProjId:null,editProjId:null,curTab:'info'};
+const TODAY=new Date(); TODAY.setHours(0,0,0,0);
+
+/* ─────────────────────────────
+   STORAGE
+───────────────────────────── */
+function sv(){localStorage.setItem('rv3:p',JSON.stringify(S.projects));localStorage.setItem('rv3:s',JSON.stringify(S.schedules));localStorage.setItem('rv3:c',JSON.stringify(S.cats));}
+function ld(){const p=localStorage.getItem('rv3:p'),s=localStorage.getItem('rv3:s'),c=localStorage.getItem('rv3:c');if(p)S.projects=JSON.parse(p);if(s)S.schedules=JSON.parse(s);if(c)S.cats=JSON.parse(c);}
+
+/* ─────────────────────────────
+   UTILS
+───────────────────────────── */
+function uid(){return '_'+Math.random().toString(36).slice(2,9);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtD(d){return d?d.replace(/-/g,'.').slice(0,10):'-';}
+function fmtA(n){if(!n)return'-';if(n>=1e8)return(n/1e8).toFixed(1).replace(/\.0$/,'')+'억원';if(n>=1e4)return Math.round(n/1e4)+'만원';return n.toLocaleString()+'원';}
+function dayUntil(ds){if(!ds)return null;const d=new Date(ds);d.setHours(0,0,0,0);return Math.ceil((d-TODAY)/86400000);}
+function elapsedPct(p){if(!p.startDate||!p.endDate)return 0;const s=new Date(p.startDate),e=new Date(p.endDate),tot=e-s;if(tot<=0)return 100;return Math.round(Math.max(0,Math.min(TODAY-s,tot)/tot*100));}
+function isRisk(p){if(p.status==='위험')return true;if(p.status==='완료')return false;const d=dayUntil(p.endDate);if(d!==null&&d<=30&&(p.progress||0)<80)return true;if(elapsedPct(p)-(p.progress||0)>20)return true;return false;}
+function pColor(pct){return pct>=80?'var(--green)':pct>=40?'var(--blue)':'var(--orange)';}
+function mgrTxt(arr){if(!arr||!arr.length)return'-';return arr.length===1?arr[0]:arr[0]+' 외 '+(arr.length-1)+'명';}
+function statusBdg(p){const s=p.status||'진행중';if(s==='완료')return`<span class="bdg bdg-g">완료</span>`;if(s==='위험')return`<span class="bdg bdg-r">위험</span>`;if(s==='준비중')return`<span class="bdg bdg-x">준비중</span>`;if(isRisk(p))return`<span class="bdg bdg-o">위험</span>`;return`<span class="bdg bdg-b">진행중</span>`;}
+function midDate(s,e){const a=new Date(s),b=new Date(e);return new Date((a.getTime()+b.getTime())/2).toISOString().slice(0,10);}
+
+/* ─────────────────────────────
+   VIEW SWITCH
+───────────────────────────── */
+function sw(v){
+  document.getElementById('vd').classList.toggle('on',v==='d');
+  document.getElementById('vp').classList.toggle('on',v==='p');
+  document.getElementById('vs').classList.toggle('on',v==='s');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',['d','p','s'][i]===v));
+  if(v==='s')rSchedTable();
+  if(v==='p'){rt2();}
+}
+
+/* ─────────────────────────────
+   HEADER LABELS
+───────────────────────────── */
+function initLabels(){
+  const d=new Date();
+  document.getElementById('hdate').textContent=`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} (${'일월화수목금토'[d.getDay()]})`;
+  document.getElementById('todayLbl').textContent=`${d.getMonth()+1}/${d.getDate()}(${'일월화수목금토'[d.getDay()]})`;
+  const m=new Date(d);m.setDate(d.getDate()-((d.getDay()+6)%7));
+  const sun=new Date(m);sun.setDate(m.getDate()+6);
+  document.getElementById('wrange').textContent=`${m.getMonth()+1}/${m.getDate()} ~ ${sun.getMonth()+1}/${sun.getDate()}`;
+}
+
+/* ─────────────────────────────
+   TODAY TIMELINE
+───────────────────────────── */
+function setTV(v){S.tv=v;document.getElementById('tgMy').classList.toggle('on',v==='my');document.getElementById('tgDept').classList.toggle('on',v==='dept');rToday();}
+function rToday(){
+  const ts=TODAY.toISOString().slice(0,10);
+  let items=S.schedules.filter(s=>s.date===ts);
+  if(S.tv==='my')items=items.filter(s=>s.type==='my');
+  items.sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const tl=document.getElementById('todayTL');
+  if(!items.length){tl.innerHTML='<div class="no-sched">오늘 일정이 없습니다</div>';return;}
+  const now=new Date();
+  const nowStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  tl.innerHTML=items.map(s=>{
+    const past=s.time&&s.time<nowStr;
+    const dept=s.type==='dept';
+    return`<div class="tl-item${past?' past':''}${dept?' dept':''}">
+      <span class="tl-time">${s.time||'종일'}</span>
+      <span class="tl-text">${esc(s.title)}</span>
+      <span class="tl-tag${dept?' dept':''}">${dept?'부서':'개인'}</span>
+      <button class="tl-del" onclick="dSched('${s.id}',event)">✕</button>
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────
+   WEEK CALENDAR
+───────────────────────────── */
+function rWeek(){
+  const d=new Date(TODAY);
+  const dow=(d.getDay()+6)%7;
+  const mon=new Date(d);mon.setDate(d.getDate()-dow);
+  const days=Array.from({length:5},(_,i)=>{const dd=new Date(mon);dd.setDate(mon.getDate()+i);return dd;});
+  const dn=['월','화','수','목','금'];
+  document.getElementById('wcal').innerHTML=days.map((dd,i)=>{
+    const str=dd.toISOString().slice(0,10);
+    const isT=str===TODAY.toISOString().slice(0,10);
+    const evs=S.schedules.filter(s=>s.date===str).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+    const evHtml=evs.slice(0,5).map(e=>`<div class="wev${e.type==='dept'?' dept':''}" title="${esc(e.title)}">${e.time?e.time.slice(0,5)+' ':''}${esc(e.title)}</div>`).join('');
+    const more=evs.length>5?`<div class="wmore">+${evs.length-5}개</div>`:'';
+    return`<div class="wday${isT?' today':''}">
+      <div class="wday-hd"><div class="dn">${dn[i]}</div><div class="dd">${dd.getDate()}</div></div>
+      <div class="wday-body">${evHtml}${more}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────
+   KPI
+───────────────────────────── */
+function rKPI(){
+  const total=S.projects.length;
+  const prog=S.projects.filter(p=>p.status!=='완료').length;
+  const done=S.projects.filter(p=>p.status==='완료').length;
+  const risk=S.projects.filter(p=>isRisk(p)).length;
+  const avg=total?Math.round(S.projects.reduce((s,p)=>s+(p.progress||0),0)/total):0;
+  const amt=S.projects.reduce((s,p)=>s+(p.amount||0),0);
+  document.getElementById('kpiRow').innerHTML=`
+    <div class="kpi"><span class="kpi-icon">📁</span><div class="kpi-body"><div class="kpi-val c-blue">${total}</div><div class="kpi-lbl">총 사업 수</div><div class="kpi-sub">전체 등록 사업</div></div></div>
+    <div class="kpi k-green"><span class="kpi-icon">▶</span><div class="kpi-body"><div class="kpi-val c-green">${prog}</div><div class="kpi-lbl">진행중</div><div class="kpi-sub">수행 중인 사업</div></div></div>
+    <div class="kpi"><span class="kpi-icon">✅</span><div class="kpi-body"><div class="kpi-val">${done}</div><div class="kpi-lbl">완료</div><div class="kpi-sub">완료된 사업</div></div></div>
+    <div class="kpi k-red"><span class="kpi-icon">⚠</span><div class="kpi-body"><div class="kpi-val c-red">${risk}</div><div class="kpi-lbl">위험 사업</div><div class="kpi-sub">관리 필요</div></div></div>
+    <div class="kpi k-orange"><span class="kpi-icon">📊</span><div class="kpi-body"><div class="kpi-val c-orange">${avg}%</div><div class="kpi-lbl">평균 공정률</div><div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg}%;background:var(--orange);"></div></div></div></div>
+    <div class="kpi k-teal"><span class="kpi-icon">💰</span><div class="kpi-body"><div class="kpi-val c-teal" style="font-size:16px;">${fmtA(amt)}</div><div class="kpi-lbl">총 계약금액</div><div class="kpi-sub">계약 합계</div></div></div>
+  `;
+}
+
+/* ─────────────────────────────
+   RISK CARDS
+───────────────────────────── */
+function rRisk(){
+  const risks=S.projects.filter(p=>isRisk(p)&&p.status!=='완료');
+  document.getElementById('riskCnt').textContent=risks.length;
+  const g=document.getElementById('riskGrid');
+  if(!risks.length){g.innerHTML='<div class="no-risk">현재 위험 사업이 없습니다</div>';return;}
+  g.innerHTML=risks.map(p=>{
+    const d=dayUntil(p.endDate);
+    const dl=d!==null&&d<=30;
+    const cls=p.status==='위험'||dl?'r-red':'r-orange';
+    const tag=p.status==='위험'?'관리필요':dl?`D-${d}`:'공정지연';
+    const pct=p.progress||0;
+    const col=pColor(pct);
+    return`<div class="rc ${cls}" onclick="openDetail('${p.id}')">
+      <span class="rc-tag">${tag}</span>
+      <div class="rc-name" title="${esc(p.name)}">${esc(p.name)}</div>
+      <div class="rc-meta">${esc(p.contractor||'-')} · ${mgrTxt(p.managers)}</div>
+      <div class="rc-pb"><div class="rc-pf" style="width:${pct}%;background:${col};"></div></div>
+      <div class="rc-pct" style="color:${col};">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────
+   DEADLINES
+───────────────────────────── */
+function rDeadlines(){
+  const list=[...S.projects].filter(p=>p.status!=='완료'&&p.endDate)
+    .sort((a,b)=>a.endDate.localeCompare(b.endDate)).slice(0,7);
+  const dl=document.getElementById('dlList');
+  if(!list.length){dl.innerHTML='<div style="padding:20px;text-align:center;font-size:12px;color:var(--gray-400);">사업이 없습니다</div>';return;}
+  dl.innerHTML=list.map(p=>{
+    const d=dayUntil(p.endDate);
+    const pct=p.progress||0;
+    const col=pColor(pct);
+    const bc=d<=7?'r':d<=30?'o':'g';
+    const dtxt=d<0?`D+${-d}`:d===0?'D-day':`D-${d}`;
+    return`<div class="dl-item" onclick="openDetail('${p.id}')">
+      <span class="dl-badge ${bc}">${dtxt}</span>
+      <div class="dl-info">
+        <div class="dl-name">${esc(p.name)}</div>
+        <div class="dl-pb"><div class="dl-pf" style="width:${pct}%;background:${col};"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────
+   PROJECT TABLE
+───────────────────────────── */
+function getFiltered(siId,stFId,ctFId,soFId){
+  const q=(document.getElementById(siId)||{value:''}).value.toLowerCase();
+  const st=(document.getElementById(stFId)||{value:''}).value;
+  const ct=ctFId?(document.getElementById(ctFId)||{value:''}).value:'';
+  const so=(document.getElementById(soFId)||{value:'name'}).value;
+  let list=S.projects.filter(p=>{
+    const m=!q||p.name.toLowerCase().includes(q)||(p.contractor||'').toLowerCase().includes(q)||(p.managers||[]).some(m=>m.toLowerCase().includes(q));
+    const ms=!st||(st==='위험'?isRisk(p):p.status===st);
+    const mc=!ct||p.category===ct;
+    return m&&ms&&mc;
+  });
+  list.sort((a,b)=>{
+    if(so==='risk')return(isRisk(b)?1:0)-(isRisk(a)?1:0);
+    if(so==='progress')return(b.progress||0)-(a.progress||0);
+    if(so==='amount')return(b.amount||0)-(a.amount||0);
+    if(so==='endDate')return(a.endDate||'').localeCompare(b.endDate||'');
+    if(so==='manager')return mgrTxt(a.managers).localeCompare(mgrTxt(b.managers));
+    return a.name.localeCompare(b.name);
+  });
+  return list;
+}
+function rt(){
+  const list=getFiltered('si','stF','ctF','soF');
+  document.getElementById('tblCnt').textContent=list.length;
+  const tbody=document.getElementById('ptb');
+  tbody.innerHTML=list.length?list.map(p=>projRow(p,false)).join(''):'<tr class="em-row"><td colspan="9">등록된 사업이 없습니다</td></tr>';
+}
+function rt2(){
+  const list=getFiltered('si2','stF2','','soF');
+  document.getElementById('tblCnt2').textContent=list.length;
+  const tbody=document.getElementById('ptb2');
+  tbody.innerHTML=list.length?list.map(p=>projRow(p,true)).join(''):'<tr class="em-row"><td colspan="10">등록된 사업이 없습니다</td></tr>';
+}
+function projRow(p,showStart){
+  const pct=p.progress||0,col=pColor(pct);
+  const d=dayUntil(p.endDate);
+  const dTxt=d===null?'-':d<0?`<span style="color:var(--red);font-weight:700;">D+${-d}</span>`:d<=7?`<span style="color:var(--red);">D-${d}</span>`:d<=30?`<span style="color:var(--orange);">D-${d}</span>`:fmtD(p.endDate);
+  const rCls=isRisk(p)?'risk-row':'';
+  const startCol=showStart?`<td style="font-size:11px;">${fmtD(p.startDate)}</td>`:'';
+  return`<tr class="${rCls}" onclick="openDetail('${p.id}')">
+    <td style="text-align:center;"><input type="checkbox" class="flag-cb" ${p.flagged?'checked':''} onclick="toggleFlag('${p.id}',event)" title="관리 필요"></td>
+    <td><div class="pn">${esc(p.name)}</div><div class="pc">${esc(p.category||'')}</div></td>
+    <td style="font-size:12px;">${esc(p.contractor||'-')}</td>
+    <td class="mgr">${mgrTxt(p.managers)}</td>
+    <td><div class="pb-cell"><div class="pb-wrap"><div class="pb-fill" style="width:${pct}%;background:${col};"></div></div><span class="pb-pct" style="color:${col};">${pct}%</span></div></td>
+    <td class="amt">${fmtA(p.amount)}</td>
+    ${startCol}
+    <td style="font-size:11px;">${dTxt}</td>
+    <td>${statusBdg(p)}</td>
+    <td><button class="ico-btn" onclick="openEdit('${p.id}',event)">✎</button></td>
+  </tr>`;
+}
+function toggleFlag(id,e){e.stopPropagation();const p=S.projects.find(x=>x.id===id);if(p){p.flagged=!p.flagged;sv();rAll();}}
+
+/* ─────────────────────────────
+   PROJECT MODAL
+───────────────────────────── */
+function openPM(id,e){
+  if(e)e.stopPropagation();
+  S.editProjId=id||null;
+  document.getElementById('pmTitle').textContent=id?'사업 수정':'새 사업 등록';
+  const p=id?S.projects.find(x=>x.id===id):null;
+  document.getElementById('pm_name').value=p?p.name:'';
+  document.getElementById('pm_cat').value=p?p.category||'':'';
+  document.getElementById('pm_con').value=p?p.contractor||'':'';
+  document.getElementById('pm_mgr').value=p?(p.managers||[]).join(', '):'';
+  document.getElementById('pm_amt').value=p?p.amount||'':'';
+  document.getElementById('pm_cd').value=p?p.contractDate||'':'';
+  document.getElementById('pm_sd').value=p?p.startDate||'':TODAY.toISOString().slice(0,10);
+  document.getElementById('pm_ed').value=p?p.endDate||'':'';
+  document.getElementById('pm_prog').value=p?p.progress||0:0;
+  document.getElementById('pm_st').value=p?p.status||'진행중':'진행중';
+  document.getElementById('pm_note').value=p?p.note||'':'';
+  oOv('pmOv');
+}
+function openEdit(id,e){openPM(id,e);}
+function svProj(){
+  const name=document.getElementById('pm_name').value.trim();
+  const sd=document.getElementById('pm_sd').value,ed=document.getElementById('pm_ed').value;
+  if(!name){toast('사업명을 입력하세요','err');return;}
+  if(!sd||!ed){toast('착수일과 종료일을 입력하세요','err');return;}
+  if(sd>ed){toast('착수일이 종료일보다 빨라야 합니다','err');return;}
+  const data={name,category:document.getElementById('pm_cat').value.trim(),contractor:document.getElementById('pm_con').value.trim(),
+    managers:document.getElementById('pm_mgr').value.split(',').map(m=>m.trim()).filter(Boolean),
+    amount:parseInt(document.getElementById('pm_amt').value)||0,contractDate:document.getElementById('pm_cd').value,
+    startDate:sd,endDate:ed,progress:Math.min(100,Math.max(0,parseInt(document.getElementById('pm_prog').value)||0)),
+    status:document.getElementById('pm_st').value,note:document.getElementById('pm_note').value.trim()};
+  if(S.editProjId){
+    const idx=S.projects.findIndex(x=>x.id===S.editProjId);
+    if(idx>=0){S.projects[idx]={...S.projects[idx],...data};toast('사업이 수정되었습니다');}
+  }else{
+    if(data.category&&!S.cats.includes(data.category))S.cats.push(data.category);
+    S.projects.push({id:uid(),...data,stages:[],createdAt:new Date().toISOString()});
+    toast('사업이 등록되었습니다');
+  }
+  sv();cOv('pmOv');rAll();
+}
+function editCurProj(){cOv('dmOv');openPM(S.curProjId);}
+function delCurProj(){
+  if(!S.curProjId)return;
+  if(!confirm('이 사업을 삭제하시겠습니까?'))return;
+  S.projects=S.projects.filter(p=>p.id!==S.curProjId);
+  sv();cOv('dmOv');toast('삭제되었습니다');rAll();
+}
+
+/* ─────────────────────────────
+   DETAIL MODAL
+───────────────────────────── */
+function openDetail(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  S.curProjId=id;
+  document.getElementById('dmTitle').textContent=p.name;
+  sTab('info');rDInfo(p);oOv('dmOv');
+}
+function sTab(t){
+  S.curTab=t;
+  document.querySelectorAll('.dtab').forEach((b,i)=>b.classList.toggle('on',['info','stages','gantt','scheds'][i]===t));
+  document.querySelectorAll('.tp').forEach(tp=>tp.classList.remove('on'));
+  document.getElementById('tp-'+t).classList.add('on');
+  const p=S.projects.find(x=>x.id===S.curProjId);if(!p)return;
+  if(t==='stages')rStages(p);
+  if(t==='gantt')rGantt(p);
+  if(t==='scheds')rDScheds(p);
+}
+function rDInfo(p){
+  const d=dayUntil(p.endDate);
+  const dtxt=d===null?'-':d<0?`종료 ${-d}일 초과`:`D-${d}`;
+  document.getElementById('dmIG').innerHTML=`
+    <div class="ii"><div class="il">수행사</div><div class="iv">${esc(p.contractor||'-')}</div></div>
+    <div class="ii"><div class="il">담당자</div><div class="iv">${(p.managers||[]).join(', ')||'-'}</div></div>
+    <div class="ii"><div class="il">분류</div><div class="iv">${esc(p.category||'-')}</div></div>
+    <div class="ii"><div class="il">계약금액</div><div class="iv">${fmtA(p.amount)}</div></div>
+    <div class="ii"><div class="il">계약일</div><div class="iv">${fmtD(p.contractDate)}</div></div>
+    <div class="ii"><div class="il">착수일</div><div class="iv">${fmtD(p.startDate)}</div></div>
+    <div class="ii"><div class="il">종료일</div><div class="iv">${fmtD(p.endDate)}</div></div>
+    <div class="ii"><div class="il">남은 기간</div><div class="iv" style="color:${d!==null&&d<=30?'var(--red)':'var(--gray-800)'};">${dtxt}</div></div>
+    <div class="ii"><div class="il">공정률</div><div class="iv" style="color:${pColor(p.progress||0)};">${p.progress||0}%</div></div>
+  `;
+  document.getElementById('dmNote').textContent=p.note?'비고: '+p.note:'';
+}
+
+/* Stages */
+function rStages(p){
+  const list=document.getElementById('stageList');
+  if(!p.stages||!p.stages.length){list.innerHTML='<div style="color:var(--gray-400);font-size:12px;text-align:center;padding:14px;">단계가 없습니다. 아래에서 추가하세요.</div>';return;}
+  list.innerHTML=p.stages.map(s=>`
+    <div class="sr${s.done?' done':''}">
+      <input type="checkbox" class="sck" ${s.done?'checked':''} onchange="togStage('${p.id}','${s.id}',this.checked)">
+      <input class="sni" value="${esc(s.name)}" onchange="updStageName('${p.id}','${s.id}',this.value)" style="text-decoration:${s.done?'line-through':'none'};">
+      <span style="font-size:10px;color:var(--gray-400);">목표일:</span>
+      <input type="date" class="sdi" value="${s.date||''}" onchange="updStageDate('${p.id}','${s.id}',this.value)">
+      <button class="sdel" onclick="delStage('${p.id}','${s.id}')">✕</button>
+    </div>`).join('');
+}
+function togStage(pId,sId,done){const p=S.projects.find(x=>x.id===pId);if(!p)return;const s=p.stages.find(x=>x.id===sId);if(s){s.done=done;sv();rStages(p);}}
+function updStageName(pId,sId,v){const p=S.projects.find(x=>x.id===pId);if(!p)return;const s=p.stages.find(x=>x.id===sId);if(s){s.name=v;sv();}}
+function updStageDate(pId,sId,v){const p=S.projects.find(x=>x.id===pId);if(!p)return;const s=p.stages.find(x=>x.id===sId);if(s){s.date=v;sv();}}
+function delStage(pId,sId){const p=S.projects.find(x=>x.id===pId);if(!p)return;p.stages=p.stages.filter(s=>s.id!==sId);sv();rStages(p);}
+function addStage(){
+  const p=S.projects.find(x=>x.id===S.curProjId);if(!p)return;
+  const n=document.getElementById('nStageName').value.trim();
+  if(!n){toast('단계명을 입력하세요','err');return;}
+  if(!p.stages)p.stages=[];
+  p.stages.push({id:uid(),name:n,date:document.getElementById('nStageDate').value,done:false});
+  document.getElementById('nStageName').value='';document.getElementById('nStageDate').value='';
+  sv();rStages(p);
+}
+function qStage(n){document.getElementById('nStageName').value=n;document.getElementById('nStageName').focus();}
+
+/* Gantt */
+function rGantt(p){
+  const w=document.getElementById('ganttWrap');
+  if(!p.startDate||!p.endDate){w.innerHTML='<div style="padding:20px;text-align:center;color:var(--gray-400);">날짜 정보가 없습니다</div>';return;}
+  const s=new Date(p.startDate);s.setDate(1);
+  const e=new Date(p.endDate);e.setDate(1);
+  const months=[];let cur=new Date(s);
+  while(cur<=e){months.push(new Date(cur));cur.setMonth(cur.getMonth()+1);}
+  if(!months.length)months.push(new Date(s));
+  const rows=[{name:p.name,sd:p.startDate,ed:p.endDate,done:p.status==='완료',ms:false},...(p.stages||[]).map(s=>({name:s.name,sd:s.date||p.startDate,ed:s.date||p.startDate,done:s.done,ms:true}))];
+  let th=`<th style="min-width:130px;">단계</th>`;
+  months.forEach(m=>th+=`<th class="gmt">${m.getMonth()+1}월</th>`);
+  const tbody=rows.map(r=>{
+    const rs=new Date(r.sd||p.startDate),re=new Date(r.ed||p.endDate);
+    let td=`<td style="font-size:11px;">${esc(r.name)}</td>`;
+    months.forEach(m=>{
+      const ms2=new Date(m.getFullYear(),m.getMonth(),1),me=new Date(m.getFullYear(),m.getMonth()+1,0);
+      const ov=rs<=me&&re>=ms2;
+      if(!ov){td+=`<td class="gbc"></td>`;return;}
+      const bs=Math.max(0,(rs-ms2)/(me-ms2+86400000)*100);
+      const w2=Math.min(100-bs,(Math.min(re,me)-Math.max(rs,ms2)+86400000)/(me-ms2+86400000)*100);
+      td+=`<td class="gbc"><div class="gbi${r.done?' done':''}${r.ms?' ms':''}" style="left:${bs.toFixed(1)}%;width:${Math.max(4,w2).toFixed(1)}%;"></div></td>`;
+    });
+    return`<tr>${td}</tr>`;
+  }).join('');
+  w.innerHTML=`<table class="gt"><thead><tr>${th}</tr></thead><tbody>${tbody}</tbody></table>`;
+}
+
+/* Detail schedules */
+function rDScheds(p){
+  const list=S.schedules.filter(s=>s.projectId===p.id).sort((a,b)=>a.date.localeCompare(b.date));
+  const tb=document.getElementById('dmScheds');
+  if(!list.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--gray-400);">관련 일정이 없습니다</td></tr>';return;}
+  tb.innerHTML=list.map(s=>`<tr><td>${fmtD(s.date)}</td><td>${s.time||'-'}</td><td>${esc(s.title)}</td><td>${esc(s.manager||'-')}</td><td><button class="ico-btn" onclick="dSched('${s.id}')">✕</button></td></tr>`).join('');
+}
+
+/* ─────────────────────────────
+   SCHEDULE MODAL
+───────────────────────────── */
+function openSM(){
+  document.getElementById('sc_t').value='';
+  document.getElementById('sc_d').value=TODAY.toISOString().slice(0,10);
+  document.getElementById('sc_tm').value='';
+  document.getElementById('sc_tp').value='my';
+  document.getElementById('sc_m').value='';
+  rfScProj(null);
+  oOv('smOv');
+}
+function openSMforP(){openSM();document.getElementById('sc_p').value=S.curProjId||'';}
+function rfScProj(sel){
+  document.getElementById('sc_p').innerHTML='<option value="">없음</option>'+
+    S.projects.map(p=>`<option value="${p.id}" ${p.id===sel?'selected':''}>${esc(p.name)}</option>`).join('');
+}
+function svSched(){
+  const t=document.getElementById('sc_t').value.trim(),d=document.getElementById('sc_d').value;
+  if(!t||!d){toast('제목과 날짜를 입력하세요','err');return;}
+  S.schedules.push({id:uid(),title:t,date:d,time:document.getElementById('sc_tm').value,
+    type:document.getElementById('sc_tp').value,manager:document.getElementById('sc_m').value.trim(),
+    projectId:document.getElementById('sc_p').value||null});
+  sv();cOv('smOv');toast('일정이 등록되었습니다');
+  rToday();rWeek();
+  if(S.curTab==='scheds'){const p=S.projects.find(x=>x.id===S.curProjId);if(p)rDScheds(p);}
+  if(document.getElementById('vs').classList.contains('on'))rSchedTable();
+}
+function dSched(id,e){
+  if(e)e.stopPropagation();
+  S.schedules=S.schedules.filter(s=>s.id!==id);sv();rToday();rWeek();
+  if(document.getElementById('vs').classList.contains('on'))rSchedTable();
+  const p=S.projects.find(x=>x.id===S.curProjId);if(p&&S.curTab==='scheds')rDScheds(p);
+}
+function rSchedTable(){
+  const list=[...S.schedules].sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
+  const tb=document.getElementById('stb');
+  if(!list.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--gray-400);">등록된 일정이 없습니다</td></tr>';return;}
+  tb.innerHTML=list.map(s=>{
+    const proj=S.projects.find(p=>p.id===s.projectId);
+    return`<tr><td>${fmtD(s.date)}</td><td>${s.time||'-'}</td><td>${esc(s.title)}</td>
+      <td>${s.type==='dept'?`<span class="bdg bdg-x">부서</span>`:`<span class="bdg bdg-b">개인</span>`}</td>
+      <td>${esc(s.manager||'-')}</td><td style="font-size:11px;">${proj?esc(proj.name):'-'}</td>
+      <td><button class="ico-btn" onclick="dSched('${s.id}')">✕</button></td></tr>`;
+  }).join('');
+}
+
+/* ─────────────────────────────
+   CAT DATALIST
+───────────────────────────── */
+function rfCats(){
+  document.getElementById('catDL').innerHTML=S.cats.map(c=>`<option value="${esc(c)}">`).join('');
+  const sel=document.getElementById('ctF'),cur=sel.value;
+  sel.innerHTML='<option value="">전체 분류</option>'+S.cats.map(c=>`<option value="${esc(c)}" ${c===cur?'selected':''}>${esc(c)}</option>`).join('');
+}
+
+/* ─────────────────────────────
+   EXCEL EXPORT
+───────────────────────────── */
+function dlExcel(){
+  const list=getFiltered('si','stF','ctF','soF');
+  const rows=[['사업명','수행사','담당자','공정률(%)','계약금액(원)','착수일','종료일','상태','비고']];
+  list.forEach(p=>rows.push([p.name,p.contractor||'',(p.managers||[]).join('/'),p.progress||0,p.amount||0,p.startDate||'',p.endDate||'',p.status||'진행중',p.note||'']));
+  const csv=rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='사업현황_'+TODAY.toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);toast('Excel 다운로드 완료');
+}
+
+/* ─────────────────────────────
+   OVERLAY
+───────────────────────────── */
+function oOv(id){document.getElementById(id).classList.add('open');}
+function cOv(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('click',e=>{if(e.target.classList.contains('ov'))e.target.classList.remove('open');});
+
+/* ─────────────────────────────
+   TOAST
+───────────────────────────── */
+function toast(msg,type='ok'){const t=document.createElement('div');t.className='toast'+(type==='err'?' err':'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
+
+/* ─────────────────────────────
+   RENDER ALL
+───────────────────────────── */
+function rAll(){rfCats();rKPI();rRisk();rDeadlines();rToday();rWeek();rt();}
+
+/* ─────────────────────────────
+   SAMPLE DATA
+───────────────────────────── */
+function makeSample(){
+  const Y=TODAY.getFullYear();
+  const projs=[
+    {name:'경부고속도로 구조물 안전진단 용역',category:'기술용역',contractor:'한국구조안전(주)',managers:['김태호','이순신'],amount:450000000,contractDate:`${Y}-01-10`,startDate:`${Y}-02-01`,endDate:`${Y}-07-31`,progress:62,status:'진행중',note:''},
+    {name:'서울외곽순환도로 유지보수 공사',category:'공사',contractor:'대한건설(주)',managers:['박영수'],amount:2500000000,contractDate:`${Y}-02-01`,startDate:`${Y}-03-15`,endDate:`${Y}-11-30`,progress:35,status:'진행중',note:''},
+    {name:'교통용량 분석 및 개선방안 연구',category:'연구용역',contractor:'한국교통연구원',managers:['최민준'],amount:300000000,contractDate:`${Y}-01-20`,startDate:`${Y}-02-10`,endDate:`${Y}-06-30`,progress:88,status:'진행중',note:'최종보고 준비 중'},
+    {name:'도로포장 전면 개선공사 (3공구)',category:'공사',contractor:'성한건설(주)',managers:['정명수','조영훈'],amount:3800000000,contractDate:`${Y-1}-12-01`,startDate:`${Y}-01-15`,endDate:`${Y}-08-31`,progress:28,status:'위험',note:'공정 지연 발생'},
+    {name:'터널 정밀 안전진단 용역',category:'기술용역',contractor:'(주)안전기술단',managers:['이우종'],amount:450000000,contractDate:`${Y}-01-10`,startDate:`${Y}-02-20`,endDate:`${Y}-07-31`,progress:55,status:'진행중',note:''},
+    {name:'국도 신설공사 (인천~수원 17km)',category:'공사',contractor:'현대건설(주)',managers:['성준호','배준호'],amount:8500000000,contractDate:`${Y-1}-11-15`,startDate:`${Y}-01-01`,endDate:`${Y+1}-12-31`,progress:18,status:'진행중',note:''},
+    {name:'교통신호 통합 시스템 구축',category:'기술용역',contractor:'(주)스마트교통',managers:['홍길동'],amount:1200000000,contractDate:`${Y}-01-25`,startDate:`${Y}-03-01`,endDate:`${Y}-09-30`,progress:42,status:'진행중',note:''},
+    {name:'환경영향평가 용역 (제2순환)',category:'연구용역',contractor:'환경계획(주)',managers:['이영희'],amount:350000000,contractDate:`${Y}-02-10`,startDate:`${Y}-03-20`,endDate:`${Y}-08-20`,progress:15,status:'위험',note:'일정 관리 필요'},
+    {name:'도로 재포장 공사 (남해선)',category:'공사',contractor:'도로텍(주)',managers:['강동원'],amount:4200000000,contractDate:`${Y}-01-30`,startDate:`${Y}-04-01`,endDate:`${Y+1}-03-31`,progress:5,status:'준비중',note:''},
+    {name:'구조물 정밀진단 (교량 12개소)',category:'연구용역',contractor:'(주)교량기술원',managers:['이영철'],amount:600000000,contractDate:`${Y}-02-05`,startDate:`${Y}-03-15`,endDate:`${Y}-10-31`,progress:70,status:'완료',note:'최종보고 완료'},
+  ];
+  projs.forEach(d=>{
+    const p={id:uid(),...d,stages:[],flagged:d.status==='위험',createdAt:new Date().toISOString()};
+    p.stages=[
+      {id:uid(),name:'착수보고',date:d.startDate,done:new Date(d.startDate)<=TODAY},
+      {id:uid(),name:'중간보고',date:midDate(d.startDate,d.endDate),done:d.progress>=50},
+      {id:uid(),name:'최종보고',date:d.endDate,done:d.status==='완료'},
+    ];
+    if(!S.cats.includes(d.category))S.cats.push(d.category);
+    S.projects.push(p);
+  });
+
+  // 이번주 일정 샘플
+  const d=new Date(TODAY);
+  const dow=(d.getDay()+6)%7;
+  const mon=new Date(d);mon.setDate(d.getDate()-dow);
+  const ws=[
+    {t:'주간업무 회의',tm:'09:00',tp:'dept',mg:'전 팀원',dy:0},
+    {t:'교통용량분석 착수보고 준비',tm:'14:00',tp:'my',mg:'최민준',dy:0},
+    {t:'도로포장 현장 점검',tm:'10:00',tp:'dept',mg:'정명수',dy:1},
+    {t:'감사 자료 제출',tm:'11:00',tp:'my',mg:'홍길동',dy:1},
+    {t:'주민설명회 (서울외곽)',tm:'14:00',tp:'dept',mg:'박영수',dy:2},
+    {t:'구조물진단 업체 미팅',tm:'10:30',tp:'my',mg:'이영철',dy:2},
+    {t:'계약 검토 회의',tm:'15:00',tp:'dept',mg:'성준호',dy:3},
+    {t:'터널 현장 방문',tm:'09:30',tp:'my',mg:'이우종',dy:3},
+    {t:'주간 보고서 작성',tm:'16:00',tp:'my',mg:'홍길동',dy:4},
+    {t:'월말 실적 집계',tm:'14:00',tp:'dept',mg:'전 팀원',dy:4},
+  ];
+  ws.forEach(sc=>{
+    const dd=new Date(mon);dd.setDate(mon.getDate()+sc.dy);
+    S.schedules.push({id:uid(),title:sc.t,date:dd.toISOString().slice(0,10),time:sc.tm,type:sc.tp,manager:sc.mg,projectId:null});
+  });
+  // 오늘 일정
+  const ts=TODAY.toISOString().slice(0,10);
+  [{t:'주간회의',tm:'09:00',tp:'dept'},{t:'감사자료 제출',tm:'10:00',tp:'my'},{t:'주민설명회 자료 검토',tm:'14:00',tp:'my'},{t:'출장 준비',tm:'16:00',tp:'my'},{t:'부서 전체 회의',tm:'17:00',tp:'dept'}]
+    .forEach(sc=>S.schedules.push({id:uid(),title:sc.t,date:ts,time:sc.tm,type:sc.tp,manager:'',projectId:null}));
+  sv();
+}
+
+/* ─────────────────────────────
+   INIT
+───────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  ld();
+  if(!S.projects.length)makeSample();
+  initLabels();
+  // 첫 nav-btn 활성화
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  rAll();
+});
+</script>
+</body>
+</html>
